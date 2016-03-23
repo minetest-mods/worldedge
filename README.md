@@ -7,7 +7,7 @@ This gives the illusion that that world is round and you can walk all the way ar
 You can change the worlds edge by changing the first variable in init.lua
 	local edge = 30000
 
-License of code: WTFPL
+License of code: DWYWPL
 
 Written by Amaz
 Modified by Don
