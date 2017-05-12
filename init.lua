@@ -7,6 +7,10 @@ local edge = 30000
 local radius = 2
 --------------
 
+if minetest.settings:get_bool("log_mods") then
+	minetest.log("action", "World edge: " .. edge)
+end
+
 local count = 0
 local waiting_list = {}
 --[[ Explanation of waiting_list table
