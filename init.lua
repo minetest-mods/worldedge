@@ -2,7 +2,7 @@
 -- TODO: Check for terrain height
 
 -- Defines the edge of a world
-local edge = 30000
+local edge = tonumber(minetest.settings:get("world_edge")) or 30000
 -- Radius which should be checked for a good teleportation place
 local radius = 2
 --------------
