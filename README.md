@@ -1,4 +1,4 @@
-myworldedge
+worldedge
 =========
 
 A Luanti Mod that teleports you to the other side of the map when you reach its edge.
