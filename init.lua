@@ -7,10 +7,11 @@ local edge = tonumber(core.settings:get("worldedge.world_size")) or 5000
 local radius = 2
 --------------
 
-if minetest.settings:get_bool("log_mods") then
-	minetest.log("action", "World edge: " .. edge)
+if core.settings:get_bool("log_mods") then
+	core.log("action", "World edge: " .. edge)
 end
 
+local get_surface_pos
 local count = 0
 local waiting_list = {}
 --[[ Explanation of waiting_list table
@@ -23,7 +24,7 @@ local waiting_list = {}
 	}
 ]]
 
-minetest.register_globalstep(function(dtime)
+core.register_globalstep(function(dtime)
 	count = count + dtime
 	if count < 3 then
 		return
@@ -34,15 +35,15 @@ minetest.register_globalstep(function(dtime)
 		if v.player and v.player:is_player() then
 			local pos = get_surface_pos(v.pos)
 			if pos then
-				v.obj:setpos(pos)
-				minetest.after(0.2, function(p, o)
+				v.obj:set_pos(pos)
+				core.after(0.2, function(p, o)
 					p:set_detach()
 					o:remove()
 				end, v.player, v.obj)
 				waiting_list[k] = nil
 			elseif not v.notified then
 				v.notified = true
-				minetest.chat_send_player(k, "Sorry, we have not found a free place yet. Please be patient.")
+				core.chat_send_player(k, "Sorry, we have not found a free place yet. Please be patient.")
 			end
 		else
 			v.obj:remove()
@@ -52,11 +53,11 @@ minetest.register_globalstep(function(dtime)
 
 	local newedge = edge - 5
 	-- Check if the players are near the edge and teleport them
-	local players = minetest.get_connected_players()
+	local players = core.get_connected_players()
 	for i, player in ipairs(players) do
 		local name = player:get_player_name()
 		if not waiting_list[name] then
-			local pos = vector.round(player:getpos())
+			local pos = vector.round(player:get_pos())
 			local newpos = nil
 			if pos.x >= edge then
 				newpos = {x = -newedge, y = 10, z = pos.z}
@@ -72,21 +73,21 @@ minetest.register_globalstep(function(dtime)
 
 			-- Teleport the player
 			if newpos then
-				minetest.chat_send_player(name, "Please wait a few seconds. We will teleport you soon.")
-				local obj = minetest.add_entity(newpos, "worldedge:lock")
+				core.chat_send_player(name, "Please wait a few seconds. We will teleport you soon.")
+				local obj = core.add_entity(newpos, "worldedge:lock")
 				player:set_attach(obj, "", {x=0, y=0, z=0}, {x=0, y=0, z=0})
 				waiting_list[name] = {
 					player = player,
 					pos = newpos,
 					obj = obj
 				}
-				obj:setpos(newpos)
+				obj:set_pos(newpos)
 			end
 		end
 	end
 end)
 
-function get_surface_pos(pos)
+get_surface_pos = function(pos)
 	local minp = {
 		x = pos.x - radius - 1,
 		y = -10,
@@ -98,10 +99,10 @@ function get_surface_pos(pos)
 		z = pos.z + radius - 1
 	}
 
-	local c_air = minetest.get_content_id("air")
-	local c_ignore = minetest.get_content_id("ignore")
+	local c_air = core.get_content_id("air")
+	local c_ignore = core.get_content_id("ignore")
 
-	local vm = minetest.get_voxel_manip()
+	local vm = core.get_voxel_manip()
 	local emin, emax = vm:read_from_map(minp, maxp)
 	local area = VoxelArea:new{MinEdge = emin, MaxEdge = emax}
 	local data = vm:get_data()
@@ -137,7 +138,7 @@ function get_surface_pos(pos)
 	end
 end
 
-minetest.register_entity("worldedge:lock", {
+core.register_entity("worldedge:lock", {
 	initial_properties = {
 		is_visible = false
 	},
