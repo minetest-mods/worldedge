@@ -8,4 +8,5 @@ globals = {
 read_globals = {
     "VoxelArea",
     "vector",
+    "dump",
 }
